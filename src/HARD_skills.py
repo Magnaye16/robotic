@@ -326,7 +326,7 @@ def is_done():
     return drivetrain.is_done()
 
 
-# def autonomous():
+def autonomous():
         
     controller_1.buttonLeft.pressed( lambda: drive_turn(30))
     controller_1.buttonRight.pressed( lambda: drive_turn(30,RIGHT))
@@ -552,7 +552,7 @@ def is_done():
         
 #         dispenser_on()
 
-def autonomous():
+# def autonomous():
         
     controller_1.buttonLeft.pressed( lambda: drive_turn(30))
     controller_1.buttonRight.pressed( lambda: drive_turn(30,RIGHT))
