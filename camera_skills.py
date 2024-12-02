@@ -21,7 +21,7 @@ conveyor_feeder_motor_b = Motor(Ports.PORT20, GearSetting.RATIO_18_1, True)
 feeder_motor = Motor(Ports.PORT7,GearSetting.RATIO_18_1,False)
 conveyor_feeder = MotorGroup(conveyor_feeder_motor_a)
 
-
+dispenser = Motor(Ports.PORT19,GearSetting.RATIO_18_1,False)
 left_motor_arm = Motor(Ports.PORT20,GearSetting.RATIO_18_1,False)
 right_motor_arm = Motor(Ports.PORT16,GearSetting.RATIO_18_1,True)
 arm = MotorGroup(left_motor_arm,right_motor_arm)
@@ -32,6 +32,7 @@ RED_RING_sig = Signature(2, 6539, 10627, 8583,-2007, -1013, -1510,2.5, 0)
 STAKE_sig = Signature(3, -2299, -201, -1250,-7495, -5343, -6419,2.5, 0)
 front_vision = Vision(Ports.PORT6, 50, BLUE_RING_sig, RED_RING_sig, STAKE_sig)
 back_vision = Vision(Ports.PORT3, 50, BLUE_RING_sig, RED_RING_sig, STAKE_sig)
+middle_vision = Vision(Ports.PORT2, 50, BLUE_RING_sig, RED_RING_sig, STAKE_sig)
 flapper = Motor(Ports.PORT10,GearSetting.RATIO_18_1,False)
 
 
@@ -164,6 +165,14 @@ def left_turn(deg, velocity:float = 100):
 
 def right_turn(deg, velocity:float = 100):
     drive_turn(deg,RIGHT, velocity)    
+
+def dispenser_off():
+        dispenser.spin(FORWARD)
+        at_max(dispenser,lambda:dispenser.stop)
+def dispenser_on():
+        dispenser.spin(REVERSE)
+        at_max(dispenser,lambda:dispenser.stop)   
+
 
 
 
@@ -347,12 +356,22 @@ def autonomous():
     # # sure
     arm.spin_for(REVERSE,750,wait=False)
 
-    look_at(stake, back_vision)
-    drive_for(-15,30)
-    arm.spin_for(REVERSE,510,wait=False)
-    drive_for(-15)
+    # look_at(stake, back_vision)
+    # drive_for(-15,30)
+    # arm.spin_for(REVERSE,510,wait=False)
+    # drive_for(-15)
+    # grabber.open()
+    # drive_for(-5,max_speed)
+
+    dispenser_off()
+    drive_for(-15,max_speed)
+    arm.spin_for(REVERSE,500,wait=False)
+    left_turn(40)
+    # look_at(stake, back_vision)
+    drive_for(-37,15)
     grabber.open()
-    drive_for(-5,max_speed)
+    wait(wait_time,MSEC)
+
     
     
     #11111111111111111111111111
