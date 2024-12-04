@@ -363,17 +363,17 @@ def autonomous():
     # grabber.open()
     # drive_for(-5,max_speed)
 
-    dispenser_off()
+    # dispenser_off()
     drive_for(-15,max_speed)
     arm.spin_for(REVERSE,500,wait=False)
     left_turn(40)
-    # look_at(stake, back_vision)
+    look_at(stake, back_vision)
     drive_for(-37,15)
     grabber.open()
     wait(wait_time,MSEC)
 
     
-    
+    #sure
     #11111111111111111111111111
     left_turn(65)
     look_at(aliance_ring,front_vision)
@@ -533,6 +533,7 @@ def autonomous():
 
     # lock_arm()
     arm.spin_for(REVERSE,800,wait=False)
+    # sure AAAAA
 
 
     #corner turn

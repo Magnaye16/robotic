@@ -32,6 +32,7 @@ STAKE_sig = Signature(3, -2299, -201, -1250,-7495, -5343, -6419,2.5, 0)
 front_vision = Vision(Ports.PORT6, 50, BLUE_RING_sig, RED_RING_sig, STAKE_sig)
 back_vision = Vision(Ports.PORT3, 50, BLUE_RING_sig, RED_RING_sig, STAKE_sig)
 middle_vision = Vision(Ports.PORT2, 50, BLUE_RING_sig, RED_RING_sig, STAKE_sig)
+arm_lock = Motor(Ports.PORT1,GearSetting.RATIO_18_1,False)
 flapper = Motor(Ports.PORT10,GearSetting.RATIO_18_1,False)
 
 
@@ -221,7 +222,13 @@ def arm_control():
     else:arm.stop()
 
 
+def lock_arm():
+    arm_lock.spin_for(FORWARD,90,DEGREES,wait=False)
+    at_max(arm_lock,lambda:arm_lock.stop(HOLD))
 
+def release_arm():
+    arm_lock.spin_for(REVERSE,90,DEGREES,wait=False)
+    at_max(arm_lock,lambda:arm_lock.stop(HOLD))
 
     
 def dispenser_off():
@@ -328,26 +335,26 @@ def is_done():
 
 def autonomous():
         
-    controller_1.buttonLeft.pressed( lambda: drive_turn(30))
-    controller_1.buttonRight.pressed( lambda: drive_turn(30,RIGHT))
-    controller_1.buttonUp.pressed( lambda: drive_for(5))
-    controller_1.buttonDown.pressed( lambda: drive_for(-5))
+    # controller_1.buttonLeft.pressed( lambda: drive_turn(30))
+    # controller_1.buttonRight.pressed( lambda: drive_turn(30,RIGHT))
+    # controller_1.buttonUp.pressed( lambda: drive_for(5))
+    # controller_1.buttonDown.pressed( lambda: drive_for(-5))
     
-    controller_1.buttonY.pressed(lambda:look_at(aliance_ring))
-    controller_1.buttonB.pressed(lambda:look_at(STAKE_sig,back_vision))
+    # controller_1.buttonY.pressed(lambda:look_at(aliance_ring))
+    # controller_1.buttonB.pressed(lambda:look_at(STAKE_sig,back_vision))
     
-    controller_1.buttonR1.pressed(lambda:intake.spin(REVERSE))
-    controller_1.buttonR2.pressed(lambda:intake.spin(FORWARD))
-    controller_1.buttonL1.pressed(lambda:intake.stop())
+    # controller_1.buttonR1.pressed(lambda:intake.spin(REVERSE))
+    # controller_1.buttonR2.pressed(lambda:intake.spin(FORWARD))
+    # controller_1.buttonL1.pressed(lambda:intake.stop())
 
 
     
-    controller_1.buttonA.pressed(
-        lambda:grabber.close()
-    )
-    controller_1.buttonX.pressed(
-    lambda:grabber.open()
-    )
+    # controller_1.buttonA.pressed(
+    #     lambda:grabber.close()
+    # )
+    # controller_1.buttonX.pressed(
+    # lambda:grabber.open()
+    # )
    
     
     wait_time = 800
@@ -367,8 +374,6 @@ def autonomous():
     drive_for(-37,15)
     grabber.open()
     wait(wait_time,MSEC)
-
-
     drive_for(13,15)
     
     
@@ -388,39 +393,40 @@ def autonomous():
     # # look_at(aliance_ring)
     wait(1,SECONDS)
     drive_for(-5,max_speed)
+    dispenser_on
     
     # # # #######3333333333333333
     right_turn(32)
     # look_at(aliance_ring)
-    drive_for(25,max_speed)
-    wait(1,SECONDS)
-    wait(wait_time,MSEC)
+    # drive_for(25,max_speed)
+    # wait(1,SECONDS)
+    # wait(wait_time,MSEC)
     
-    #444444444444444444444
+    # #444444444444444444444
 
-    left_turn(110)
-    # look_at(aliance_ring)
-    drive_for(22,max_speed)
-    drive_for(-12,max_speed)
+    # left_turn(110)
+    # # look_at(aliance_ring)
+    # drive_for(22,max_speed)
+    # drive_for(-12,max_speed)
 
-    # drive_for(23,max_speed,_wait= False)
-    # when_stucked(lambda:drivetrain.stop())
-    # drive_for(-10,max_speed)
-    wait(wait_time,MSEC)
+    # # drive_for(23,max_speed,_wait= False)
+    # # when_stucked(lambda:drivetrain.stop())
+    # # drive_for(-10,max_speed)
+    # wait(wait_time,MSEC)
     
     
-    # #555555555555555555555
-    left_turn(47)
-    # look_at(aliance_ring)
+    # # #555555555555555555555
+    # left_turn(47)
+    # # look_at(aliance_ring)
     
-    drive_for(60,max_speed,_wait=False)
-    wait(wait_time,MSEC)
-    when_stucked(lambda:drive_for(-15,max_speed))
+    # drive_for(60,max_speed,_wait=False)
+    # wait(wait_time,MSEC)
+    # when_stucked(lambda:drive_for(-15,max_speed))
     
     
-    # #66666666666666666666666666
+    # # #66666666666666666666666666
     # right_turn(45)
-    # look_at(aliance_ring)
+    # # look_at(aliance_ring)
     
     # drive_for(27,max_speed,_wait=False)
     # when_stucked(lambda:drivetrain.stop())
@@ -434,356 +440,16 @@ def autonomous():
     
     # wait(wait_time,MSEC)
     
-    # #deposit
+    # # #deposit
     # left_turn(180)
     # wait(100,MSEC)
     # grabber.close()
-    
-    
-    # # magnaye
-    # # drive_for(-20,_wait=False)
-    # # when_stucked(lambda:drive_for(15,max_speed))
-    
 
-    # # intake(False)
-    # # left_turn(15)
-    # # drive_for(15,max_speed)
-
-    # # left_turn(25)
-
-    # # drive_for(-40,100,_wait=False)
-    # # when_stucked(lambda:drivetrain.stop())
-    
-    # # # look_at(aliance_ring)
-    # # drive_for(50,40)
-    # # magnaye
-
-
-   
-    # drive_for(-20,_wait=False)
-    # when_stucked(lambda:drive_for(25,max_speed))
-    
-    # intake(False)
-    # right_turn(30)
-
-    # #turn
-    # drive_for(-60,100,_wait=False)
-    # when_stucked(lambda:drivetrain.stop())
-    # drive_for(18,max_speed)
-    # right_turn(85)
-
-    # # stake grab
-    # drive_for(-50,max_speed)
-    # right_turn(45)
-    # # look_at(STAKE_sig)
-    # drive_for(-48,12)
-    # grabber.open()
-
-    # #777777777
-    # drive_for(10,max_speed) 
-    # right_turn(80)
-    # look_at(aliance_ring)
-    # drive_for(35, 12)
-    # intake(False)
-    
-    # #flappers
-    # flapper_on()
-    # right_turn(80)
-    # left_turn(80)
-    # flapper_off()
-
-    # intake()
-    # drive_for(40,max_speed,_wait=False)
-    # when_stucked(lambda:drivetrain.stop())
-    # intake(False)
-    
-    # #remove blue
-    # #888888888
-    # wait(wait_time,MSEC)
-    # flapper_on()
-    # right_turn(100)
-    # flapper_off()
-    # intake(True)
-    # drive_for(10,max_speed)
-    # wait(wait_time,MSEC)
-
-    # # #999999999
-    # # right_turn(35)
-    # # drive_turn(35, max_speed)
-
-    # # #end
-    # # drive_turn(-60, max_speed,_wait=False)
-    # # when_stucked(lambda:drivetrain.stop())
-    # # intake(False)
-
-
-    
-    # #888888888
-    # right_turn(45)
-    # right_turn(80)
-    # look_at(aliance_ring)
-    # drive_for(20, max_speed)
-    # wait(wait_time,MSEC)
-    # drive_for(-5,max_speed)
-
-    # #dispose
-    # right_turn(55)
-    # drive_for(-60,max_speed,_wait=False)
-    # when_stucked(lambda:drivetrain.stop())
-    # grabber.close()
-
-    # #push stake to corner
-    # drive_for(-50,40,_wait=False)
-    # when_stucked(lambda:drivetrain.stop())
-    
-    # #end
-    # wait(1,SECONDS)
-    # drive_for(3,max_speed,_wait=False)
-    # intake(False)
-    # drive_for(-3,max_speed,_wait=False)
-    # drive_for(3,max_speed,_wait=False)
-    # # look_at(aliance_ring)
-        
-
-# def check_if_aliance(obj_sign:Signature,vision:Vision = middle_vision):
-        
-#         if is_in_vision(aliance_ring()):
-#             wait(1,SECONDS)
-        
-#         dispenser_on()
-
-# def autonomous():
-        
-    controller_1.buttonLeft.pressed( lambda: drive_turn(30))
-    controller_1.buttonRight.pressed( lambda: drive_turn(30,RIGHT))
-    controller_1.buttonUp.pressed( lambda: drive_for(5))
-    controller_1.buttonDown.pressed( lambda: drive_for(-5))
-    
-    controller_1.buttonY.pressed(lambda:look_at(aliance_ring))
-    controller_1.buttonB.pressed(lambda:look_at(STAKE_sig,back_vision))
-    
-    controller_1.buttonR1.pressed(lambda:intake.spin(REVERSE))
-    controller_1.buttonR2.pressed(lambda:intake.spin(FORWARD))
-    controller_1.buttonL1.pressed(lambda:intake.stop())
-
-
-    
-    controller_1.buttonA.pressed(
-        lambda:grabber.close()
-    )
-    controller_1.buttonX.pressed(
-    lambda:grabber.open()
-    )
-   
-    
-    wait_time = 800
-    max_speed = 17
-    
-
-    # look_at(aliance_ring,middle_vision)
-    # Setup logic to detect blue_stake_sig and control dispenser
-    # intake()
-    # detect_and_control_dispenser()
-
-    dispenser_off()
-    drive_for(-15,max_speed)
-    arm.spin_for(REVERSE,500,wait=False)
-    left_turn(40)
-    # look_at(stake, back_vision)
-    drive_for(-37,15)
-    grabber.open()
-    wait(wait_time,MSEC)
-
-
-    drive_for(13,15)
-    
-    
-    # # #11111111111111111111111111
-    left_turn(50)
-    # # # look_at(aliance_ring,front_vision)
-    intake()
-    drive_for(30,max_speed)
-    wait(1,SECONDS)
-    drive_for(-5,max_speed)
-
-    
-    
-    # # # #2222222222222222222222222222
-    left_turn(135)
-    drive_for(25,max_speed)
-    # # look_at(aliance_ring)
-    wait(1,SECONDS)
-    drive_for(-5,max_speed)
-    
-    # # # #######3333333333333333
-    right_turn(32)
-    # look_at(aliance_ring)
-    drive_for(25,max_speed)
-    wait(1,SECONDS)
-    wait(wait_time,MSEC)
-    
-    #444444444444444444444
-
-    left_turn(110)
-    # look_at(aliance_ring)
-    drive_for(22,max_speed)
-    drive_for(-12,max_speed)
-
-    # drive_for(23,max_speed,_wait= False)
-    # when_stucked(lambda:drivetrain.stop())
-    # drive_for(-10,max_speed)
-    wait(wait_time,MSEC)
-    
-    
-    # #555555555555555555555
-    left_turn(47)
-    # look_at(aliance_ring)
-    
-    drive_for(60,max_speed,_wait=False)
-    wait(wait_time,MSEC)
-    when_stucked(lambda:drive_for(-15,max_speed))
-    
-    
-    # #66666666666666666666666666
-    # right_turn(45)
-    # look_at(aliance_ring)
-    
-    # drive_for(27,max_speed,_wait=False)
-    # when_stucked(lambda:drivetrain.stop())
-    # drive_for(-10,max_speed)
-
-    # wait(wait_time,MSEC)
-    
-    # drive_for(15,max_speed,_wait=False)
-    # when_stucked(lambda:drivetrain.stop())
-    # drive_for(-10,max_speed)
-    
-    # wait(wait_time,MSEC)
-    
-    # #deposit
-    # left_turn(180)
-    # wait(100,MSEC)
-    # grabber.close()
-    
-    
-    # # magnaye
-    # # drive_for(-20,_wait=False)
-    # # when_stucked(lambda:drive_for(15,max_speed))
-    
-
-    # # intake(False)
-    # # left_turn(15)
-    # # drive_for(15,max_speed)
-
-    # # left_turn(25)
-
-    # # drive_for(-40,100,_wait=False)
-    # # when_stucked(lambda:drivetrain.stop())
-    
-    # # # look_at(aliance_ring)
-    # # drive_for(50,40)
-    # # magnaye
-
-
-   
-    # drive_for(-20,_wait=False)
-    # when_stucked(lambda:drive_for(25,max_speed))
-    
-    # intake(False)
-    # right_turn(30)
-
-    # #turn
-    # drive_for(-60,100,_wait=False)
-    # when_stucked(lambda:drivetrain.stop())
-    # drive_for(18,max_speed)
-    # right_turn(85)
-
-    # # stake grab
-    # drive_for(-50,max_speed)
-    # right_turn(45)
-    # # look_at(STAKE_sig)
-    # drive_for(-48,12)
-    # grabber.open()
-
-    # #777777777
-    # drive_for(10,max_speed) 
-    # right_turn(80)
-    # look_at(aliance_ring)
-    # drive_for(35, 12)
-    # intake(False)
-    
-    # #flappers
-    # flapper_on()
-    # right_turn(80)
-    # left_turn(80)
-    # flapper_off()
-
-    # intake()
-    # drive_for(40,max_speed,_wait=False)
-    # when_stucked(lambda:drivetrain.stop())
-    # intake(False)
-    
-    # #remove blue
-    # #888888888
-    # wait(wait_time,MSEC)
-    # flapper_on()
-    # right_turn(100)
-    # flapper_off()
-    # intake(True)
-    # drive_for(10,max_speed)
-    # wait(wait_time,MSEC)
-
-    # # #999999999
-    # # right_turn(35)
-    # # drive_turn(35, max_speed)
-
-    # # #end
-    # # drive_turn(-60, max_speed,_wait=False)
-    # # when_stucked(lambda:drivetrain.stop())
-    # # intake(False)
-
-
-    
-    # #888888888
-    # right_turn(45)
-    # right_turn(80)
-    # look_at(aliance_ring)
-    # drive_for(20, max_speed)
-    # wait(wait_time,MSEC)
-    # drive_for(-5,max_speed)
-
-    # #dispose
-    # right_turn(55)
-    # drive_for(-60,max_speed,_wait=False)
-    # when_stucked(lambda:drivetrain.stop())
-    # grabber.close()
-
-    # #push stake to corner
-    # drive_for(-50,40,_wait=False)
-    # when_stucked(lambda:drivetrain.stop())
-    
-    # #end
-    # wait(1,SECONDS)
-    # drive_for(3,max_speed,_wait=False)
-    # intake(False)
-    # drive_for(-3,max_speed,_wait=False)
-    # drive_for(3,max_speed,_wait=False)
-    # # look_at(aliance_ring)
-        
-
-# def check_if_aliance(obj_sign:Signature,vision:Vision = middle_vision):
-        
-#         if is_in_vision(aliance_ring()):
-#             wait(1,SECONDS)
-        
-#         dispenser_on()
 
 
 f_op = False
-# def drivers_control():
 def user_control():
 
-    # detect_and_control_dispenser()
     arm.set_velocity(100, PERCENT)
     dispenser.set_velocity(100,PERCENT)
     drivetrain.set_stopping(BRAKE)
@@ -796,10 +462,8 @@ def user_control():
     )
 
     
-    # controller_1.buttonDown.pressed(lambda:toggle_dispenser())
-
-    controller_1.buttonA.pressed(lambda:look_at(aliance_ring))
-    controller_1.buttonX.pressed(lambda:look_at(STAKE_sig,back_vision))
+    controller_1.buttonA.pressed(release_arm)
+    controller_1.buttonX.pressed(lock_arm)
     
     def extend_flaper():
         global f_op
@@ -813,8 +477,8 @@ def user_control():
         dispenser.spin(FORWARD if f_op else REVERSE,10000)
         at_max(dispenser,lambda:dispenser.stop)
 
-    controller_1.buttonDown.pressed(toggle_dispense)
-    controller_1.buttonRight.pressed(extend_flaper)
+    controller_1.buttonLeft.pressed(extend_flaper)
+    controller_1.buttonRight.pressed(toggle_dispense)
     
     while True:
         conveyor_control()

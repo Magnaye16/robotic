@@ -21,7 +21,7 @@ conveyor_feeder_motor_b = Motor(Ports.PORT20, GearSetting.RATIO_18_1, True)
 feeder_motor = Motor(Ports.PORT7,GearSetting.RATIO_18_1,False)
 conveyor_feeder = MotorGroup(conveyor_feeder_motor_a)
 
-
+dispenser = Motor(Ports.PORT19,GearSetting.RATIO_18_1,False)
 left_motor_arm = Motor(Ports.PORT20,GearSetting.RATIO_18_1,False)
 right_motor_arm = Motor(Ports.PORT16,GearSetting.RATIO_18_1,True)
 arm = MotorGroup(left_motor_arm,right_motor_arm)
@@ -31,9 +31,14 @@ RED_RING_sig = Signature(2, 6539, 10627, 8583,-2007, -1013, -1510,2.5, 0)
 STAKE_sig = Signature(3, -2299, -201, -1250,-7495, -5343, -6419,2.5, 0)
 front_vision = Vision(Ports.PORT6, 50, BLUE_RING_sig, RED_RING_sig, STAKE_sig)
 back_vision = Vision(Ports.PORT3, 50, BLUE_RING_sig, RED_RING_sig, STAKE_sig)
+middle_vision = Vision(Ports.PORT2, 50, BLUE_RING_sig, RED_RING_sig, STAKE_sig)
+arm_lock = Motor(Ports.PORT1,GearSetting.RATIO_18_1,False)
+flapper = Motor(Ports.PORT10,GearSetting.RATIO_18_1,False)
 
 grabber = Pneumatics(brain.three_wire_port.a)
 aliance_ring = RED_RING_sig
+stake = STAKE_sig
+
 
 # wait for rotation sensor to fully initialize
 wait(30, MSEC)
@@ -206,6 +211,43 @@ def arm_control():
     elif controller_1.buttonL2.pressing():
             arm.spin(FORWARD)
     else:arm.stop()
+
+def at_max(motor:Motor,callback):
+
+    wait(200,MSEC)
+
+    while not motor.is_spinning():
+        print(abs(motor.velocity()),"  ",motor.is_spinning())
+        if not abs(motor.velocity()) > 0:
+            print("maxed")
+            callback()  
+            break
+        wait(10,MSEC)    
+
+def dispenser_off():
+        dispenser.spin(FORWARD)
+        at_max(dispenser,lambda:dispenser.stop)
+def dispenser_on():
+        dispenser.spin(REVERSE)
+        at_max(dispenser,lambda:dispenser.stop) 
+
+def lock_arm():
+    arm_lock.spin_for(FORWARD,90,DEGREES,wait=False)
+    at_max(arm_lock,lambda:arm_lock.stop(HOLD))
+
+def release_arm():
+    arm_lock.spin_for(REVERSE,90,DEGREES,wait=False)
+    at_max(arm_lock,lambda:arm_lock.stop(HOLD))
+
+
+
+
+
+
+
+
+
+
 #endregion custom_drive_utils
 
 
@@ -274,16 +316,21 @@ def autonomous():
     wait_time = 800
     max_speed = 17
     
-    
-    drive_for(-15,30)
+    # starting////////////////////////////
+    drive_for(-10,max_speed)
     arm.spin_for(REVERSE,500,wait=False)
-    drive_for(-15)
+    wait(wait_time,MSEC)
+    left_turn(30)
+    look_at(stake, back_vision)
+    drive_for(-37,15)
     grabber.open()
-    drive_for(-5,max_speed)
+    wait(wait_time,MSEC)
+    drive_for(13,15)
+
     
     
     #11111111111111111111111111
-    left_turn(65)
+    left_turn(60)
     look_at(aliance_ring)
     intake()
     drive_for(26,max_speed)
@@ -292,30 +339,33 @@ def autonomous():
     
     
     #2222222222222222222222222222
-    left_turn(140)
+    left_turn(125)
     drive_for(10,max_speed)
     look_at(aliance_ring)
     drive_for(15,max_speed)
     wait(wait_time,MSEC)
     drive_for(-5,max_speed)
     
-    #######3333333333333333
+    # #######3333333333333333
     right_turn(30)
     look_at(aliance_ring)
     drive_for(25,max_speed)
     wait(wait_time,MSEC)
     
-    #444444444444444444444
+    # #444444444444444444444
     left_turn(90)
     look_at(aliance_ring)
     drive_for(19,max_speed,_wait= False)
     when_stucked(lambda:drivetrain.stop())
     drive_for(-10,max_speed)
+    # dispenser_on()
     wait(wait_time,MSEC)
+    # dispenser_off()
+
     
     
     #555555555555555555555
-    left_turn(60)
+    left_turn(55)
     look_at(aliance_ring)
     
     drive_for(62,max_speed,_wait=False)
@@ -336,7 +386,6 @@ def autonomous():
     drive_for(15,max_speed,_wait=False)
     when_stucked(lambda:drivetrain.stop())
     drive_for(-10,max_speed)
-    
     wait(wait_time,MSEC)
     
     #deposit
@@ -346,22 +395,25 @@ def autonomous():
     drive_for(-20,_wait=False)
     when_stucked(lambda:drive_for(5,max_speed))
     
-
-    intake(False)
-    left_turn(15)    
-    look_at(aliance_ring)
+    # intake(False)
+    # left_turn(15)    
+    # look_at(aliance_ring)
     
-    arm.spin_for(REVERSE,800,wait=False)
-    drive_for(40,40)
-    look_at(aliance_ring)
-    drive_for(40,1000)
+    # arm.spin_for(REVERSE,800,wait=False)
+    # drive_for(40,40)
+    # look_at(aliance_ring)
+    # drive_for(40,1000)
     
-    arm.spin_for(FORWARD,2000,wait=False,velocity=100,VelocityUnits=PERCENT)
-    wait(2,SECONDS)
-    arm.stop()
+    # arm.spin_for(FORWARD,2000,wait=False,velocity=100,VelocityUnits=PERCENT)
+    # wait(2,SECONDS)
+    # arm.stop()
     
    
 def user_control():
+   
+    arm.set_velocity(100, PERCENT)
+    dispenser.set_velocity(100,PERCENT)
+    drivetrain.set_stopping(BRAKE)
     
     controller_1.buttonY.pressed(
         lambda:grabber.close()
@@ -370,17 +422,28 @@ def user_control():
        lambda:grabber.open()
     )
 
-    controller_1.buttonA.pressed(lambda:look_at(aliance_ring))
-    controller_1.buttonX.pressed(lambda:look_at(STAKE_sig,back_vision))
     
+    controller_1.buttonA.pressed(release_arm)
+    controller_1.buttonX.pressed(lock_arm)
     
-    
+    def extend_flaper():
+        global f_op
+        f_op = not f_op
+        flapper.spin(FORWARD if f_op else REVERSE,10000)
+        at_max(flapper,lambda:flapper.stop)
+        
+    def toggle_dispense():
+        global f_op
+        f_op = not f_op
+        dispenser.spin(FORWARD if f_op else REVERSE,10000)
+        at_max(dispenser,lambda:dispenser.stop)
 
+    controller_1.buttonLeft.pressed(extend_flaper)
+    controller_1.buttonRight.pressed(toggle_dispense)
+    
     while True:
         conveyor_control()
         arm_control()
-        
-        
         drivetrain_movement(from_controller=True,speed_mul=0.2 if controller_1.buttonDown.pressing() else 1)
 
 
