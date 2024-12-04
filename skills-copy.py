@@ -327,8 +327,6 @@ def autonomous():
     wait(wait_time,MSEC)
     drive_for(13,15)
 
-    
-    
     #11111111111111111111111111
     left_turn(60)
     look_at(aliance_ring)
@@ -395,7 +393,8 @@ def autonomous():
     drive_for(-20,_wait=False)
     when_stucked(lambda:drive_for(5,max_speed))
     
-    # intake(False)
+    
+    # intake(false)
     # left_turn(15)    
     # look_at(aliance_ring)
     
