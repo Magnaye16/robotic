@@ -418,26 +418,26 @@ def autonomous():
     when_stucked(lambda:drive_for(-15,max_speed))
     
     
-    # #66666666666666666666666666
-    # right_turn(45)
-    # look_at(aliance_ring)
+    #66666666666666666666666666
+    right_turn(45)
+    look_at(aliance_ring)
     
-    # drive_for(27,max_speed,_wait=False)
-    # when_stucked(lambda:drivetrain.stop())
-    # drive_for(-10,max_speed)
+    drive_for(27,max_speed,_wait=False)
+    when_stucked(lambda:drivetrain.stop())
+    drive_for(-10,max_speed)
 
-    # wait(wait_time,MSEC)
+    wait(wait_time,MSEC)
     
-    # drive_for(15,max_speed,_wait=False)
-    # when_stucked(lambda:drivetrain.stop())
-    # drive_for(-10,max_speed)
+    drive_for(15,max_speed,_wait=False)
+    when_stucked(lambda:drivetrain.stop())
+    drive_for(-10,max_speed)
     
-    # wait(wait_time,MSEC)
+    wait(wait_time,MSEC)
     
-    # #deposit
-    # left_turn(180)
-    # wait(100,MSEC)
-    # grabber.close()
+    #deposit
+    left_turn(180)
+    wait(100,MSEC)
+    grabber.close()
     
     
     # # magnaye

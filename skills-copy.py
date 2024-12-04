@@ -394,19 +394,7 @@ def autonomous():
     when_stucked(lambda:drive_for(5,max_speed))
     
     
-    # intake(false)
-    # left_turn(15)    
-    # look_at(aliance_ring)
-    
-    # arm.spin_for(REVERSE,800,wait=False)
-    # drive_for(40,40)
-    # look_at(aliance_ring)
-    # drive_for(40,1000)
-    
-    # arm.spin_for(FORWARD,2000,wait=False,velocity=100,VelocityUnits=PERCENT)
-    # wait(2,SECONDS)
-    # arm.stop()
-    
+  
    
 def user_control():
    
