@@ -7,7 +7,6 @@ brain=Brain()
 
 # Robot configuration code
 controller_1 = Controller(PRIMARY)
-
 left_motor_a = Motor(Ports.PORT13, GearSetting.RATIO_18_1, False)
 left_motor_b = Motor(Ports.PORT14, GearSetting.RATIO_18_1, False)
 left_drive_smart = MotorGroup(left_motor_a, left_motor_b)
@@ -21,7 +20,7 @@ conveyor_feeder_motor_b = Motor(Ports.PORT20, GearSetting.RATIO_18_1, True)
 feeder_motor = Motor(Ports.PORT7,GearSetting.RATIO_18_1,False)
 conveyor_feeder = MotorGroup(conveyor_feeder_motor_a)
 
-
+dispenser = Motor(Ports.PORT19,GearSetting.RATIO_18_1,False)
 left_motor_arm = Motor(Ports.PORT20,GearSetting.RATIO_18_1,False)
 right_motor_arm = Motor(Ports.PORT16,GearSetting.RATIO_18_1,True)
 arm = MotorGroup(left_motor_arm,right_motor_arm)
@@ -31,10 +30,14 @@ RED_RING_sig = Signature(2, 6539, 10627, 8583,-2007, -1013, -1510,2.5, 0)
 STAKE_sig = Signature(3, -2299, -201, -1250,-7495, -5343, -6419,2.5, 0)
 front_vision = Vision(Ports.PORT6, 50, BLUE_RING_sig, RED_RING_sig, STAKE_sig)
 back_vision = Vision(Ports.PORT3, 50, BLUE_RING_sig, RED_RING_sig, STAKE_sig)
+middle_vision = Vision(Ports.PORT2, 50, BLUE_RING_sig, RED_RING_sig, STAKE_sig)
+arm_lock = Motor(Ports.PORT1,GearSetting.RATIO_18_1,False)
+flapper = Motor(Ports.PORT10,GearSetting.RATIO_18_1,False)
 
 grabber = Pneumatics(brain.three_wire_port.a)
-aliance_ring = BLUE_RING_sig
-flapper = Motor(Ports.PORT10,GearSetting.RATIO_18_1,False)
+aliance_ring = RED_RING_sig
+stake = STAKE_sig
+
 
 # wait for rotation sensor to fully initialize
 wait(30, MSEC)
@@ -231,8 +234,21 @@ def arm_control():
     elif controller_1.buttonL2.pressing():
             arm.spin(FORWARD)
     else:arm.stop()
-#endregion custom_drive_utils
 
+
+def lock_arm():
+    arm_lock.spin_for(FORWARD,90,DEGREES,wait=False)
+    at_max(arm_lock,lambda:arm_lock.stop(HOLD))
+
+def release_arm():
+    arm_lock.spin_for(REVERSE,90,DEGREES,wait=False)
+    at_max(arm_lock,lambda:arm_lock.stop(HOLD))
+
+
+
+
+#endregion custom_drive_utils
+#region pre autonomous
 
 
 def pre_autonomous():
@@ -350,6 +366,7 @@ def autonomous():
 f_op = False
 def drivers_control():
     arm.set_velocity(100, PERCENT)
+    dispenser.set_velocity(100,PERCENT)
     drivetrain.set_stopping(BRAKE)
     
     controller_1.buttonY.pressed(
@@ -360,9 +377,8 @@ def drivers_control():
     )
 
     
-    
-    controller_1.buttonA.pressed(lambda:look_at(aliance_ring))
-    controller_1.buttonX.pressed(lambda:look_at(STAKE_sig,back_vision))
+    controller_1.buttonA.pressed(release_arm)
+    controller_1.buttonX.pressed(lock_arm)
     
     def extend_flaper():
         global f_op
@@ -370,33 +386,19 @@ def drivers_control():
         flapper.spin(FORWARD if f_op else REVERSE,10000)
         at_max(flapper,lambda:flapper.stop)
         
-    
-    controller_1.buttonRight.pressed(extend_flaper)
+    def toggle_dispense():
+        global f_op
+        f_op = not f_op
+        dispenser.spin(FORWARD if f_op else REVERSE,10000)
+        at_max(dispenser,lambda:dispenser.stop)
+
+    controller_1.buttonLeft.pressed(extend_flaper)
+    controller_1.buttonRight.pressed(toggle_dispense)
     
     while True:
         conveyor_control()
         arm_control()
         drivetrain_movement(from_controller=True,speed_mul=0.2 if controller_1.buttonDown.pressing() else 1)
-
-    # controller_1.buttonY.pressed(
-    #     lambda:grabber.close()
-    # )
-    # controller_1.buttonB.pressed(
-    #    lambda:grabber.open()
-    # )
-
-    # controller_1.buttonA.pressed(lambda:look_at(aliance_ring))
-    # controller_1.buttonX.pressed(lambda:look_at(STAKE_sig,back_vision))
-    
-    
-    
-
-    # while True:
-    #     conveyor_control()
-    #     arm_control()
-        
-        
-    #     drivetrain_movement(from_controller=True,speed_mul=0.2 if controller_1.buttonDown.pressing() else 1)
 
 
 

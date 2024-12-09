@@ -16,16 +16,16 @@ right_motor_b = Motor(Ports.PORT12, GearSetting.RATIO_18_1, True)
 right_drive_smart = MotorGroup(right_motor_a, right_motor_b)
 drivetrain = DriveTrain(left_drive_smart, right_drive_smart, 319.19, 317.5, 300, MM, 0.2857142857142857)
 
-conveyor_feeder_motor_a = Motor(Ports.PORT18, GearSetting.RATIO_18_1, False)
-conveyor_feeder_motor_b = Motor(Ports.PORT20, GearSetting.RATIO_18_1, True)
-feeder_motor = Motor(Ports.PORT7,GearSetting.RATIO_18_1,False)
+conveyor_feeder_motor_a = Motor(Ports.PORT3, GearSetting.RATIO_18_1, False)
+conveyor_feeder_motor_b = Motor(Ports.PORT4, GearSetting.RATIO_18_1, True)
+feeder_motor = Motor(Ports.PORT1,GearSetting.RATIO_18_1,False)
 conveyor_feeder = MotorGroup(conveyor_feeder_motor_a)
+arm_lock = Motor(Ports.PORT15,GearSetting.RATIO_18_1,False)
 
 
 left_motor_arm = Motor(Ports.PORT20,GearSetting.RATIO_18_1,False)
 right_motor_arm = Motor(Ports.PORT16,GearSetting.RATIO_18_1,True)
 arm = MotorGroup(left_motor_arm,right_motor_arm)
-arm_lock = Motor(Ports.PORT1,GearSetting.RATIO_18_1,False)
 
 BLUE_RING_sig = Signature(1, -4393, -2133, -3263,-1, 4567, 2283,1.1, 0)
 RED_RING_sig = Signature(2, 6539, 10627, 8583,-2007, -1013, -1510,2.5, 0)
@@ -137,7 +137,7 @@ def look_at(obj_sign:Signature,vision:Vision = front_vision):
             #max tries     #prevent false centered
         if (abs(vel) < 0.5 and counter > 5) : break
 
-        drivetrain_movement(vel)
+        # drivetrain_movement(vel)
         counter+=1
         wait(10,MSEC)
     
@@ -194,11 +194,11 @@ def drivetrain_movement(side_speed=0,forward_speed=0,from_controller:bool = Fals
         forward_speed = controller_1.axis3.position()  
 
 
-    target_right_drive_vel = (forward_speed - side_speed) * speed_mul
-    target_left_drive_vel = (forward_speed + side_speed)* speed_mul
+    # target_right_drive_vel = (forward_speed - side_speed) * speed_mul
+    # target_left_drive_vel = (forward_speed + side_speed)* speed_mul
     
-    right_drive_smart.spin(FORWARD,target_right_drive_vel,PERCENT)
-    left_drive_smart.spin(FORWARD,target_left_drive_vel,PERCENT)
+    # right_drive_smart.spin(FORWARD,target_right_drive_vel,PERCENT)
+    # left_drive_smart.spin(FORWARD,target_left_drive_vel,PERCENT)
 
 
 def conveyor_feed(feed:bool = True,out = False):
@@ -216,11 +216,11 @@ def intake(run:bool = True):
 def conveyor_control():
     if controller_1.buttonR1.pressing():
             conveyor_feeder.spin(REVERSE,100,PERCENT)
-            feeder_motor.spin(REVERSE,100,PERCENT)
+            feeder_motor.spin(FORWARD,100,PERCENT)
             
     elif controller_1.buttonR2.pressing():
             conveyor_feeder.spin(FORWARD,100,PERCENT)
-            feeder_motor.spin(FORWARD,100,PERCENT)
+            feeder_motor.spin(REVERSE,100,PERCENT)
             
     else:
         conveyor_feeder.stop()
@@ -462,12 +462,12 @@ def autonomous():
     drive_for(50, 30)
     
 def lock_arm():
-    arm_lock.spin_for(FORWARD,90,DEGREES,wait=False)
-    at_max(arm_lock,lambda:arm_lock.stop(HOLD))
+    arm_lock.spin_for(FORWARD,20,DEGREES,wait=False)
+    lambda:arm_lock.stop(HOLD)
 
 def release_arm():
-    arm_lock.spin_for(REVERSE,90,DEGREES,wait=False)
-    at_max(arm_lock,lambda:arm_lock.stop(HOLD))
+    arm_lock.spin_for(REVERSE,20,DEGREES,wait=False)
+    lambda:arm_lock.stop(HOLD)
 
     
    
@@ -498,7 +498,7 @@ def drivers_control():
     while True:
         conveyor_control()
         arm_control()
-        drivetrain_movement(from_controller=True,speed_mul=0.2 if controller_1.buttonDown.pressing() else 1)
+        # drivetrain_movement(from_controller=True,speed_mul=0.2 if controller_1.buttonDown.pressing() else 1)
 
     # controller_1.buttonY.pressed(
     #     lambda:grabber.close()
